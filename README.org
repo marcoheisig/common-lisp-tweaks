@@ -1,0 +1,213 @@
+#+TITLE: Common Lisp Tweaks
+
+This project collects various tweaks for working with Common Lisp.
+
+Do not hesitate to create an issue or a pull request if you have
+suggestions for new tweaks, or if you have an idea how an existing tweak
+can be tweaked further,
+
+* Tweaks
+
+** Emacs Lisp Tweaks
+
+This section contains tweaks that are specific to Emacs.  You enable them
+by putting the relevant code into your Emacs configuration file (Usually
+=~/.emacs=, or =~/.emacs.d/init.el=).
+
+*** Improve how Emacs indents code
+
+Emacs is usually very smart about indenting Lisp code, but there is still
+room for improvement, especially when using very elaborate custom macros.
+
+#+BEGIN_SRC elisp
+;;; By default, the keyword arguments of MAKE-INSTANCE,
+;;; REINITIALIZE-INSTANCE and CHANGE-CLASS are aligned with the first
+;;; argument of that function.  This looks ugly and wastes screen space.
+;;; With the following changes, the keyword arguments align as if the
+;;; non-keyword arguments wouldn't exist.
+(put 'make-instance 'common-lisp-indent-function 1)
+(put 'reinitialize-instance 'common-lisp-indent-function 1)
+(put 'change-class 'common-lisp-indent-function 2)
+
+;;; Have you ever wondered how you can have your own LET, LET* or FLET
+;;; indented properly?  Here's how:
+(put 'dx-flet 'common-lisp-indent-function
+     '((&whole 4 &rest (&whole 1 4 &lambda &body)) &body))
+(put 'dx-let 'common-lisp-indent-function
+     '((&whole 4 &rest (&whole 1 1 2)) &body))
+(put 'dx-let* 'common-lisp-indent-function
+     '((&whole 4 &rest (&whole 1 1 2)) &body))
+#+END_SRC
+
+*** Use Clouseau for inspecting objects
+
+Clouseau is an graphical inspector for Common Lisp.  SLIME's built-in
+inspector is great, but Clouseau is better (If you doubt it, try inspecting
+a complex number).
+
+With this tweak, invoking the inspector will open a new window with the
+graphical inspector.  If there is already a window with the graphical
+inspector, the existing window is reused.
+
+#+BEGIN_SRC elisp
+(defun clouseau-inspect (string)
+  (interactive
+   (list (slime-read-from-minibuffer
+          "Inspect value (evaluated): "
+          (slime-sexp-at-point))))
+  (let ((inspector 'cl-user::*clouseau-inspector*))
+    (slime-eval-async
+        `(cl:progn
+          (cl:defvar ,inspector nil)
+          ;; (Re)start the inspector if necessary.
+          (cl:unless (cl:and (clim:application-frame-p ,inspector)
+                             (clim-internals::frame-process ,inspector))
+                     (cl:setf ,inspector (cl:nth-value 1 (clouseau:inspect nil :new-process t))))
+          ;; Tell the inspector to visualize the correct datum.
+          (cl:setf (clouseau:root-object ,inspector :run-hook-p t)
+                   (cl:eval (cl:read-from-string ,string)))
+          ;; Return nothing.
+          (cl:values)))))
+
+(define-key slime-prefix-map (kbd "c") 'clouseau-inspect)
+#+END_SRC
+
+For this code to work, you also need to have Clouseau loaded it your Common
+Lisp image.  This can be achieved either by putting =(ql:quickload
+"clouseau")= into the startup file of your Common Lisp implementation, or
+by [[*Using core files for faster startup][integrating Clouseau into a core file]].
+
+** Common Lisp Tooling
+
+*** Sharing one startup file across multiple implementations
+
+If you are using multiple Common Lisp implementations on a single machine,
+chances are you are annoyed at having to maintain one startup file for each
+one of them.  There is a simple trick how you can keep your startup files
+in sync: Just create a single file, say =~/.init.lisp=, put all your
+configuration there, and then create a symbolic link for each
+implementation and have it point to this file.  Here is how you can create
+such links:
+
+#+BEGIN_SRC sh
+ln -sT ~/.init.lisp ~/.clisprc.lisp    # for CLISP
+ln -sT ~/.init.lisp ~/.cmucl-init.lisp # for CMUCL
+ln -sT ~/.init.lisp ~/.eclrc           # for ECL
+ln -sT ~/.init.lisp ~/.ccl-init.lisp   # for CCL
+ln -sT ~/.init.lisp ~/.sbclrc          # for SBCL
+ln -sT ~/.init.lisp ~/.abclrc          # for ABCL
+ln -sT ~/.init.lisp ~/.mkclrc          # for MKCL
+#+END_SRC
+
+*Note:* You can still put implementation-specific code in your shared
+ startup file if you use the =#+= reader macro, as in =#+sbcl(setf
+ sb-ext:*inline-expansion-limit* 100)=.
+
+*** Things to put into your startup file
+
+The behavior of a Common Lisp implementation is determined by a several
+special variables.  There default values are not always ideal for working
+interactively on a REPL.  Here are some suggestions for improving that:
+
+#+BEGIN_SRC lisp
+;; Stop Lisp from SCREAMING AT YOU.
+(setf *print-case* :downcase)
+;; Replace very deeply nested structures by '#' when printing.
+(setf *print-level* 50)
+;; Replace elements of very long sequences by '...' when printing.
+(setf *print-length* 200)
+#+END_SRC
+
+Another popular tweak is to globally enact a certain compiler policy.  In
+Common Lisp, the compiler policy consists of quantities that should be
+optimized for, and their respective priority on a scale from zero to three.
+The standard optimize qualities are
+
+| Name              | Meaning                           |
+|-------------------+-----------------------------------|
+| compilation-speed | speed of the compilation process  |
+| debug             | ease of debugging                 |
+| safety            | run-time error checking           |
+| space             | both code size and run-time space |
+| speed             | speed of the object code          |
+
+Usually, any Lisp code change these policies locally via =(declare
+(optimize ...))= declarations, or on a per-file basis via =(declaim
+(optimize ...))=.  However "it is unspecified whether or not the
+compile-time side-effects of a declaim persist after the file has been
+compiled", so you should be careful with the latter.
+
+Anyways, you might not want any code you compile, load, or execute to screw
+with your compiler policy.  Luckily, SBCL has you covered and offers a can
+globally enforce certain minimum and maximum values for each quantity.
+
+A popular option for development systems is to have both safety and
+debugging cranked up to the highest possible value.
+
+#+BEGIN_SRC lisp
+#+sbcl
+(progn
+  (sb-ext:restrict-compiler-policy 'safety 3)
+  (sb-ext:restrict-compiler-policy 'debug 3))
+#+END_SRC
+
+*Warning:* Restricting the compiler policy in this way will affect
+performance quite a bit.  Don't forget this before you run any benchmarks
+(This has happened to me several times by now).
+
+*** Improving the Quicklisp experience
+
+Git hooks, automatic updates, ...
+
+*** Using core files for faster startup
+
+SBCL supports loading a custom core file instead of the default, empty one.
+Users can create custom core files where many of their most frequently used
+libraries are already present to speed up startup time considerably.
+
+The only downside of using such a custom core file is that the user is now
+responsible for keeping the libraries therein up to date, ideally by
+regenerating the core file after each new Quicklisp release.
+
+A core file can be created like this:
+
+#+BEGIN_SRC lisp
+;; Ensure that Quicklisp is up to date.
+(ql:update-client)
+(ql:update-all-dists)
+
+;; Load libraries that you care about
+(dolist (system '("alexandria"
+                  "babel"
+                  "bordeaux-threads"
+                  "cffi"
+                  "closer-mop"
+                  "cl-ppcre"
+                  "cl-fad"
+                  "flexi-streams"
+                  "nibbles"
+                  "named-readtables"
+                  "split-sequence"
+                  "trivial-backtrace"
+                  "trivial-features"
+                  "trivial-garbage"
+                  "trivial-macroexpand-all"
+                  "trivial-package-local-nicknames"
+                  ;; ...
+                  ))
+  (ql:quickload system))
+
+(uiop:dump-image "my-core")
+#+END_SRC
+
+You can also tell Emacs to use your custom core by default by adding
+something like this to your configuration file:
+
+#+BEGIN_SRC elisp
+(setf slime-lisp-implementations
+      '((sbcl-vanilla ("sbcl" "--dynamic-space-size" "8GB"))
+        (sbcl-custom ("sbcl" "--dynamic-space-size" "8GB" "--core" "~/path/to/my-core"))))
+(setf silme-default-lisp 'sbcl-custom)
+#+END_SRC
+
+*** Compiling SBCL
