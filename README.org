@@ -1,23 +1,31 @@
 #+TITLE: Common Lisp Tweaks
 
-This project collects various tweaks for working with Common Lisp.
+This document collects various tweaks for working with Common Lisp.
 
-Do not hesitate to create an issue or a pull request if you have
-suggestions for new tweaks, or if you have an idea how an existing tweak
+Do not hesitate to create an issue or a pull request if you have a
+suggestion for a new tweak, or if you have an idea how an existing tweak
 can be tweaked further,
+
+* Table of Contents
+- [[*Table of Contents]]
+- [[*Tweaks]]
+  - [[*Improve how Emacs indents code]]
+  - [[*Tell SLIME to use Clouseau for inspecting objects]]
+  - [[*Share one startup file across multiple implementations]]
+  - [[*Customize your startup file]]
+  - [[*Improve your Quicklisp experience]]
+  - [[*Use a core file for faster startup]]
+  - [[*Compile SBCL yourself]] 
+- [[*Acknowledgements]]
+
 
 * Tweaks
 
-** Emacs Lisp Tweaks
-
-This section contains tweaks that are specific to Emacs.  You enable them
-by putting the relevant code into your Emacs configuration file (Usually
-=~/.emacs=, or =~/.emacs.d/init.el=).
-
-*** Improve how Emacs indents code
+** Improve how Emacs indents code
 
 Emacs is usually very smart about indenting Lisp code, but there is still
 room for improvement, especially when using very elaborate custom macros.
+Put the following code in your Emacs configuration to improve indentation:
 
 #+BEGIN_SRC elisp
 ;;; By default, the keyword arguments of MAKE-INSTANCE,
@@ -39,7 +47,7 @@ room for improvement, especially when using very elaborate custom macros.
      '((&whole 4 &rest (&whole 1 1 2)) &body))
 #+END_SRC
 
-*** Use Clouseau for inspecting objects
+** Tell SLIME to use Clouseau for inspecting objects
 
 Clouseau is an graphical inspector for Common Lisp.  SLIME's built-in
 inspector is great, but Clouseau is better (If you doubt it, try inspecting
@@ -77,9 +85,7 @@ Lisp image.  This can be achieved either by putting =(ql:quickload
 "clouseau")= into the startup file of your Common Lisp implementation, or
 by [[*Using core files for faster startup][integrating Clouseau into a core file]].
 
-** Common Lisp Tooling
-
-*** Sharing one startup file across multiple implementations
+** Share one startup file across multiple implementations
 
 If you are using multiple Common Lisp implementations on a single machine,
 chances are you are annoyed at having to maintain one startup file for each
@@ -103,7 +109,7 @@ ln -sT ~/.init.lisp ~/.mkclrc          # for MKCL
  startup file if you use the =#+= reader macro, as in =#+sbcl(setf
  sb-ext:*inline-expansion-limit* 100)=.
 
-*** Things to put into your startup file
+** Customize your startup file
 
 The behavior of a Common Lisp implementation is determined by a several
 special variables.  There default values are not always ideal for working
@@ -155,11 +161,11 @@ debugging cranked up to the highest possible value.
 performance quite a bit.  Don't forget this before you run any benchmarks
 (This has happened to me several times by now).
 
-*** Improving the Quicklisp experience
+** Improve your Quicklisp experience
 
 Git hooks, automatic updates, ...
 
-*** Using core files for faster startup
+** Use a core file for faster startup
 
 SBCL supports loading a custom core file instead of the default, empty one.
 Users can create custom core files where many of their most frequently used
@@ -210,4 +216,7 @@ something like this to your configuration file:
 (setf silme-default-lisp 'sbcl-custom)
 #+END_SRC
 
-*** Compiling SBCL
+** Compile SBCL yourself
+...
+
+* Acknowledgements
