@@ -7,20 +7,26 @@ suggestion for a new tweak, or if you have an idea how an existing tweak
 can be tweaked further,
 
 * Table of Contents
-- [[https://github.com/marcoheisig/common-lisp-tweaks#table-of-contents][Table of Contents]]
-- [[https://github.com/marcoheisig/common-lisp-tweaks#tweaks][Tweaks]]
-  - [[https://github.com/marcoheisig/common-lisp-tweaks#improve-how-emacs-indents-code][Improve how Emacs indents code]]
-  - [[https://github.com/marcoheisig/common-lisp-tweaks#tell-slime-to-use-clouseau-for-inspecting-objects][Tell SLIME to use Clouseau for inspecting objects]]
-  - [[https://github.com/marcoheisig/common-lisp-tweaks#share-one-startup-file-across-multiple-implementations][Share one startup file across multiple implementations]]
-  - [[https://github.com/marcoheisig/common-lisp-tweaks#customize-your-startup-file][Customize your startup file]]
-  - [[https://github.com/marcoheisig/common-lisp-tweaks#improve-your-quicklisp-experience][Improve your Quicklisp experience]]
-  - [[https://github.com/marcoheisig/common-lisp-tweaks#use-a-core-file-for-faster-startup][Use a core file for faster startup]]
-  - [[https://github.com/marcoheisig/common-lisp-tweaks#compile-sbcl-yourself][Compile SBCL yourself]]
-- [[https://github.com/marcoheisig/common-lisp-tweaks#acknowledgements][Acknowledgements]]
+- [[#table-of-contents][Table of Contents]]
+- [[#tweaks][Tweaks]]
+  - [[#improve-how-emacs-indents-code][Improve how Emacs indents code]]
+  - [[#tell-slime-to-use-clouseau-for-inspecting-objects][Tell SLIME to use Clouseau for inspecting objects]]
+  - [[#share-one-startup-file-across-multiple-implementations][Share one startup file across multiple implementations]]
+  - [[#customize-your-startup-file][Customize your startup file]]
+  - [[#improve-your-quicklisp-experience][Improve your Quicklisp experience]]
+  - [[#use-a-core-file-for-faster-startup][Use a core file for faster startup]]
+  - [[#compile-sbcl-yourself][Compile SBCL yourself]]
+- [[#acknowledgements][Acknowledgements]]
 
 * Tweaks
+:PROPERTIES:
+:CUSTOM_ID: tweaks
+:END:
 
 ** Improve how Emacs indents code
+:PROPERTIES:
+:CUSTOM_ID: improve-how-emacs-indents-code
+:END:
 
 Emacs is usually very smart about indenting Lisp code, but there is still
 room for improvement, especially when using very elaborate custom macros.
@@ -47,6 +53,9 @@ Put the following code in your Emacs configuration to improve indentation:
 #+END_SRC
 
 ** Tell SLIME to use Clouseau for inspecting objects
+:PROPERTIES:
+:CUSTOM_ID: tell-slime-to-use-clouseau-for-inspecting-objects
+:END:
 
 Clouseau is an graphical inspector for Common Lisp.  SLIME's built-in
 inspector is great, but Clouseau is better (If you doubt it, try inspecting
@@ -82,9 +91,12 @@ inspector, the existing window is reused.
 For this code to work, you also need to have Clouseau loaded it your Common
 Lisp image.  This can be achieved either by putting =(ql:quickload
 "clouseau")= into the startup file of your Common Lisp implementation, or
-by [[*Using core files for faster startup][integrating Clouseau into a core file]].
+by [[#use-a-core-file-for-faster-startup][integrating Clouseau into a core file]].
 
 ** Share one startup file across multiple implementations
+:PROPERTIES:
+:CUSTOM_ID: share-one-startup-file-across-multiple-implementations
+:END:
 
 If you are using multiple Common Lisp implementations on a single machine,
 chances are you are annoyed at having to maintain one startup file for each
@@ -109,6 +121,9 @@ ln -sT ~/.init.lisp ~/.mkclrc          # for MKCL
  sb-ext:*inline-expansion-limit* 100)=.
 
 ** Customize your startup file
+:PROPERTIES:
+:CUSTOM_ID: customize-your-startup-file
+:END:
 
 The behavior of a Common Lisp implementation is determined by a several
 special variables.  There default values are not always ideal for working
@@ -161,10 +176,16 @@ performance quite a bit.  Don't forget this before you run any benchmarks
 (This has happened to me several times by now).
 
 ** Improve your Quicklisp experience
+:PROPERTIES:
+:CUSTOM_ID: improve-your-quicklisp-experience
+:END:
 
 Git hooks, automatic updates, ...
 
 ** Use a core file for faster startup
+:PROPERTIES:
+:CUSTOM_ID: use-a-core-file-for-faster-startup
+:END:
 
 SBCL supports loading a custom core file instead of the default, empty one.
 Users can create custom core files where many of their most frequently used
@@ -216,6 +237,17 @@ something like this to your configuration file:
 #+END_SRC
 
 ** Compile SBCL yourself
-...
+:PROPERTIES:
+:CUSTOM_ID: compile-sbcl-yourself
+:END:
+Build instructions ...
 
 * Acknowledgements
+
+The following people have contributed ideas to this document in some way or
+another:
+
+- Michael Fiano
+- death
+- Michał "phoe" Herda
+- Marco Heisig
