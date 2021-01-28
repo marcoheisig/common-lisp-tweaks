@@ -7,17 +7,16 @@ suggestion for a new tweak, or if you have an idea how an existing tweak
 can be tweaked further,
 
 * Table of Contents
-- [[*Table of Contents]]
-- [[*Tweaks]]
-  - [[*Improve how Emacs indents code]]
-  - [[*Tell SLIME to use Clouseau for inspecting objects]]
-  - [[*Share one startup file across multiple implementations]]
-  - [[*Customize your startup file]]
-  - [[*Improve your Quicklisp experience]]
-  - [[*Use a core file for faster startup]]
-  - [[*Compile SBCL yourself]] 
-- [[*Acknowledgements]]
-
+- [[https://github.com/marcoheisig/common-lisp-tweaks#table-of-contents][Table of Contents]]
+- [[https://github.com/marcoheisig/common-lisp-tweaks#tweaks][Tweaks]]
+  - [[https://github.com/marcoheisig/common-lisp-tweaks#improve-how-emacs-indents-code][Improve how Emacs indents code]]
+  - [[https://github.com/marcoheisig/common-lisp-tweaks#tell-slime-to-use-clouseau-for-inspecting-objects][Tell SLIME to use Clouseau for inspecting objects]]
+  - [[https://github.com/marcoheisig/common-lisp-tweaks#share-one-startup-file-across-multiple-implementations][Share one startup file across multiple implementations]]
+  - [[https://github.com/marcoheisig/common-lisp-tweaks#customize-your-startup-file][Customize your startup file]]
+  - [[https://github.com/marcoheisig/common-lisp-tweaks#improve-your-quicklisp-experience][Improve your Quicklisp experience]]
+  - [[https://github.com/marcoheisig/common-lisp-tweaks#use-a-core-file-for-faster-startup][Use a core file for faster startup]]
+  - [[https://github.com/marcoheisig/common-lisp-tweaks#compile-sbcl-yourself][Compile SBCL yourself]]
+- [[https://github.com/marcoheisig/common-lisp-tweaks#acknowledgements][Acknowledgements]]
 
 * Tweaks
 
