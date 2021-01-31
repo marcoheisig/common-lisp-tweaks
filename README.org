@@ -251,26 +251,34 @@ Everyone of your friends is talking about it.  You desperately want those
 features.  But your package manager is stuck in the stone age.  Fret not,
 because compiling SBCL yourself is actually very simple:
 
-**** Clone or pull the SBCL repository
+**** Install dependencies
+In order to compile SBCL yourself, you need an existing Lisp implementation
+(ideally, an older version of SBCL), Git, a shell, GNU Make and GCC.  You
+can get this stuff with something like
+#+BEGIN_SRC sh
+apt install build-essential git sbcl
+#+END_SRC
+or with whatever syntax your package manager uses.
+
+**** Obtain the source code
+You can obtain the source code of SBCL from Github:
 #+BEGIN_SRC sh
 git clone https://github.com/sbcl/sbcl.git sbcl && cd sbcl
 #+END_SRC
-**** Checkout the most recent version
 Usually you don't want to build the most recent commit on the master
 branch, but the most recent release.  All SBCL releases are tagged, so you
-can (and should) just checkout the most recent tag:
+can (and should) checkout the most recent tag:
 #+BEGIN_SRC sh
 git checkout sbcl-2.X.Y
 #+END_SRC
+
 **** Build SBCL
 SBCL is build by a script called =make.sh=.  You can supply some additional
 options to this script to customize your build.  Some popular options are
 - =--dynamic-space-size=8Gb= for a large default heap size.
 - =--prefix=$HOME/usr= to put SBCL in the user's home directory later.
 - =--fancy= to enable all supported enhancements.
-
-We assume you already have an existing version of SBCL installed.  If not,
-you should have a look at the =--xc-host= flag.
+- =--xc-host=LISP= (optional) specify the Lisp implementation to use for compiling.
 
 After building, you should run the test suite, build the documentation, and
 install everything.  The following one-liner performs all these steps at
