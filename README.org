@@ -159,8 +159,8 @@ compile-time side-effects of a declaim persist after the file has been
 compiled", so you should be careful with the latter.
 
 Anyways, you might not want any code you compile, load, or execute to screw
-with your compiler policy.  Luckily, SBCL has you covered and offers a can
-globally enforce certain minimum and maximum values for each quantity.
+with your compiler policy.  Luckily, SBCL has you covered and offers a way
+to globally enforce certain minimum and maximum values for each quantity.
 
 A popular option for development systems is to have both safety and
 debugging cranked up to the highest possible value.
@@ -293,7 +293,8 @@ sh make.sh --dynamic-space-size=8Gb --prefix=$HOME/usr --fancy \
 *Note:* The above command ensures that SBCL is installed in =~/usr/bin=.
 If you want your shell to find the SBCL executable, you also need something
 like =export PATH=$HOME/usr/bin:$PATH= in your =.bashrc=.  You can type
-=which sbcl= to check whether your shell has found the correct version.
+=which sbcl= to check whether your shell is able to locate the correct
+version.
 
 * Acknowledgements
 
