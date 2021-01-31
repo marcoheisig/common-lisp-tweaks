@@ -2,23 +2,24 @@
 
 This document collects various tweaks for working with Common Lisp.
 
-Do not hesitate to create an issue or a pull request if you have a
+Do not hesitate to create an [[https://github.com/marcoheisig/common-lisp-tweaks/issues][issue]] or a [[https://github.com/marcoheisig/common-lisp-tweaks/pulls][pull request]] if you have a
 suggestion for a new tweak, or if you have an idea how an existing tweak
 can be tweaked further,
 
 * Table of Contents
 - [[#table-of-contents][Table of Contents]]
-- [[#tweaks][Tweaks]]
+- [[#general-tweaks][General Tweaks]]
   - [[#improve-how-emacs-indents-code][Improve how Emacs indents code]]
   - [[#tell-slime-to-use-clouseau-for-inspecting-objects][Tell SLIME to use Clouseau for inspecting objects]]
   - [[#share-one-startup-file-across-multiple-implementations][Share one startup file across multiple implementations]]
   - [[#customize-your-startup-file][Customize your startup file]]
   - [[#improve-your-quicklisp-experience][Improve your Quicklisp experience]]
+- [[#sbcl-specific-tweaks][SBCL-specific tweaks]]
   - [[#use-a-core-file-for-faster-startup][Use a core file for faster startup]]
   - [[#compile-sbcl-yourself][Compile SBCL yourself]]
 - [[#acknowledgements][Acknowledgements]]
 
-* Tweaks
+* General Tweaks
 :PROPERTIES:
 :CUSTOM_ID: tweaks
 :END:
@@ -182,6 +183,11 @@ performance quite a bit.  Don't forget this before you run any benchmarks
 
 Git hooks, automatic updates, ...
 
+* SBCL-specific tweaks
+:PROPERTIES:
+:CUSTOM_ID: sbcl-specific-tweaks
+:END:
+
 ** Use a core file for faster startup
 :PROPERTIES:
 :CUSTOM_ID: use-a-core-file-for-faster-startup
@@ -193,7 +199,7 @@ libraries are already present to speed up startup time considerably.
 
 The only downside of using such a custom core file is that the user is now
 responsible for keeping the libraries therein up to date, ideally by
-regenerating the core file after each new Quicklisp release.
+regenerating the core file after each new Quicklisp dist update.
 
 A core file can be created like this:
 
@@ -240,14 +246,54 @@ something like this to your configuration file:
 :PROPERTIES:
 :CUSTOM_ID: compile-sbcl-yourself
 :END:
-Build instructions ...
+You know the problem: A new, exciting version of SBCL has been released.
+Everyone of your friends is talking about it.  You desperately want those
+features.  But your package manager is stuck in the stone age.  Fret not,
+because compiling SBCL yourself is actually very simple:
+
+**** Clone or pull the SBCL repository
+#+BEGIN_SRC sh
+git clone https://github.com/sbcl/sbcl.git sbcl && cd sbcl
+#+END_SRC
+**** Checkout the most recent version
+Usually you don't want to build the most recent commit on the master
+branch, but the most recent release.  All SBCL releases are tagged, so you
+can (and should) just checkout the most recent tag:
+#+BEGIN_SRC sh
+git checkout sbcl-2.X.Y
+#+END_SRC
+**** Build SBCL
+SBCL is build by a script called =make.sh=.  You can supply some additional
+options to this script to customize your build.  Some popular options are
+- =--dynamic-space-size=8Gb= for a large default heap size.
+- =--prefix=$HOME/usr= to put SBCL in the user's home directory later.
+- =--fancy= to enable all supported enhancements.
+
+We assume you already have an existing version of SBCL installed.  If not,
+you should have a look at the =--xc-host= flag.
+
+After building, you should run the test suite, build the documentation, and
+install everything.  The following one-liner performs all these steps at
+once:
+#+BEGIN_SRC sh
+sh make.sh --dynamic-space-size=8Gb --prefix=$HOME/usr --fancy \
+    && cd tests && sh run-tests.sh && cd .. \
+    && cd doc/manual && make && cd ../.. \
+    && sh install.sh
+#+END_SRC
+
+*Note:* The above command ensures that SBCL is installed in =~/usr/bin=.
+If you want your shell to find the SBCL executable, you also need something
+like =export PATH=$HOME/usr/bin:$PATH= in your =.bashrc=.  You can type
+=which sbcl= to check whether your shell has found the correct version.
 
 * Acknowledgements
 
-The following people have contributed ideas to this document in some way or
+The following people have contributed to this document in some way or
 another:
 
 - Michael Fiano
 - death
-- Michał "phoe" Herda
+- Michał phoe Herda
 - Marco Heisig
+- Jan Moringen
